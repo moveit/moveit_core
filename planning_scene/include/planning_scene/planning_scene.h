@@ -323,6 +323,8 @@ public:
   bool processCollisionObjectMsg(const moveit_msgs::CollisionObject &object);
   bool processAttachedCollisionObjectMsg(const moveit_msgs::AttachedCollisionObject &object);
 
+  void processPlanningSceneWorldMsg(const moveit_msgs::PlanningSceneWorld &world);
+
   void processCollisionMapMsg(const moveit_msgs::CollisionMap &map);
   void processOctomapMsg(const octomap_msgs::OctomapBinaryWithPose &map);
   void processOctomapMsg(const octomap_msgs::OctomapBinary &map); 
