@@ -63,6 +63,7 @@ planning_scene::PlanningScenePtr planning_scene::PlanningScene::clone(const plan
 {
   PlanningScenePtr result = scene->diff();
   result->decoupleParent();
+  result->setName(scene->getName());
   return result;
 }
 
@@ -856,7 +857,7 @@ void planning_scene::PlanningScene::setPlanningSceneDiffMsg(const moveit_msgs::P
 
 void planning_scene::PlanningScene::setPlanningSceneMsg(const moveit_msgs::PlanningScene &scene)
 {
-  ROS_DEBUG("Setting new planning scene");
+  ROS_DEBUG("Setting new planning scene: '%s'", scene.name.c_str());
   name_ = scene.name;
   
   if (!scene.robot_model_name.empty() && scene.robot_model_name != getKinematicModel()->getName())
