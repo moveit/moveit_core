@@ -52,9 +52,9 @@ unsigned int planning_models::KinematicModel::RevoluteJointModel::getStateSpaceD
   return 1;
 }
 
-double planning_models::KinematicModel::RevoluteJointModel::getMaximumExtent(void) const
-{  
-  return variable_bounds_[0].second - variable_bounds_[0].first;
+double planning_models::KinematicModel::RevoluteJointModel::getMaximumExtent(const Bounds &other_bounds) const
+{
+  return other_bounds[0].second - other_bounds[0].first;
 }
 
 void planning_models::KinematicModel::RevoluteJointModel::getDefaultValues(std::vector<double> &values, const Bounds &bounds) const

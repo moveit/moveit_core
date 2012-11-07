@@ -49,9 +49,9 @@ unsigned int planning_models::KinematicModel::PrismaticJointModel::getStateSpace
   return 1;
 }
 
-double planning_models::KinematicModel::PrismaticJointModel::getMaximumExtent(void) const
+double planning_models::KinematicModel::PrismaticJointModel::getMaximumExtent(const Bounds &other_bounds) const
 {  
-  return variable_bounds_[0].second - variable_bounds_[0].first;
+  return other_bounds[0].second - other_bounds[0].first;
 }
 
 void planning_models::KinematicModel::PrismaticJointModel::getDefaultValues(std::vector<double> &values, const Bounds &bounds) const

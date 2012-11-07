@@ -62,11 +62,11 @@ planning_models::KinematicModel::FloatingJointModel::FloatingJointModel(const st
   variable_bounds_[6] = std::make_pair(-1.0, 1.0);
 }
 
-double planning_models::KinematicModel::FloatingJointModel::getMaximumExtent(void) const
-{  
-  double dx = variable_bounds_[0].first - variable_bounds_[0].second;
-  double dy = variable_bounds_[1].first - variable_bounds_[1].second;
-  double dz = variable_bounds_[2].first - variable_bounds_[2].second;
+double planning_models::KinematicModel::FloatingJointModel::getMaximumExtent(const Bounds &other_bounds) const
+{
+  double dx = other_bounds[0].first - other_bounds[0].second;
+  double dy = other_bounds[1].first - other_bounds[1].second;
+  double dz = other_bounds[2].first - other_bounds[2].second;
   return sqrt(dx*dx + dy*dy + dz*dz) + boost::math::constants::pi<double>() * 0.5 * angular_distance_weight_;
 }
 

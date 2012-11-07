@@ -59,10 +59,10 @@ unsigned int planning_models::KinematicModel::PlanarJointModel::getStateSpaceDim
   return 3;
 }
 
-double planning_models::KinematicModel::PlanarJointModel::getMaximumExtent(void) const
+double planning_models::KinematicModel::PlanarJointModel::getMaximumExtent(const Bounds &other_bounds) const
 {
-  double dx = variable_bounds_[0].first - variable_bounds_[0].second;
-  double dy = variable_bounds_[1].first - variable_bounds_[1].second;
+  double dx = other_bounds[0].first - other_bounds[0].second;
+  double dy = other_bounds[1].first - other_bounds[1].second;
   return sqrt(dx*dx + dy*dy) + boost::math::constants::pi<double>() * angular_distance_weight_;
 }
 

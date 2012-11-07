@@ -73,7 +73,7 @@ double planning_models::KinematicModel::FixedJointModel::distance(const std::vec
   return 0.0;  
 }
 
-double planning_models::KinematicModel::FixedJointModel::getMaximumExtent(void) const
+double planning_models::KinematicModel::FixedJointModel::getMaximumExtent(const Bounds &other_bounds) const
 {
   return 0.0;
 }
