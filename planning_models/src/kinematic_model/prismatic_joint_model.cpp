@@ -121,4 +121,3 @@ void planning_models::KinematicModel::PrismaticJointModel::computeJointStateValu
   joint_values.resize(1);
   joint_values[0] = transf.translation().dot(axis_);
 }
-
