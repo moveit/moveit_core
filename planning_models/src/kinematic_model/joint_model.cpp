@@ -59,6 +59,18 @@ bool planning_models::KinematicModel::JointModel::getVariableBounds(const std::s
   return true;
 }
 
+bool planning_models::KinematicModel::JointModel::setVariableBounds(const std::string& variable, const std::pair<double, double>& bounds)
+{ 
+  std::map<std::string, unsigned int>::const_iterator it = variable_index_.find(variable);
+  if (it == variable_index_.end())
+  {
+    ROS_WARN_STREAM("Could not find variable '" << variable << "' to set bounds for within joint '" << name_ << "'");
+    return false;
+  }
+  variable_bounds_[it->second] = bounds;
+  return true;
+}
+
 void planning_models::KinematicModel::JointModel::getDefaultValues(std::map<std::string, double> &values, const Bounds &bounds) const
 {
   std::vector<double> defv;
