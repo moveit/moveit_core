@@ -398,13 +398,13 @@ public:
   }
 
   /** \brief Check if the current state is in collision (with the environment or self collision) */
-  bool isStateColliding(bool verbose = false) const;
+  bool isStateColliding(const std::string &group = "", bool verbose = false) const;
   
   /** \brief Check if a given state is in collision (with the environment or self collision) */
-  bool isStateColliding(const moveit_msgs::RobotState &state, bool verbose = false) const;
+  bool isStateColliding(const moveit_msgs::RobotState &state, const std::string &group = "", bool verbose = false) const;
 
   /** \brief Check if a given state is in collision (with the environment or self collision) */
-  bool isStateColliding(const planning_models::KinematicState &state, bool verbose = false) const;
+  bool isStateColliding(const planning_models::KinematicState &state, const std::string &group = "", bool verbose = false) const;
 
   /** \brief Check if a given state is feasible, in accordance to the feasibility predicate specified by setStateFeasibilityPredicate(). Returns true if no feasibility predicate was specified. */
   bool isStateFeasible(const moveit_msgs::RobotState &state, bool verbose = false) const;
@@ -425,85 +425,85 @@ public:
   bool isStateConstrained(const planning_models::KinematicState &state,  const kinematic_constraints::KinematicConstraintSet &constr, bool verbose = false) const;
 
   /** \brief Check if a given state is valid. This means checking for collisions and feasibility */
-  bool isStateValid(const moveit_msgs::RobotState &state, bool verbose = false) const;
+  bool isStateValid(const moveit_msgs::RobotState &state, const std::string &group = "", bool verbose = false) const;
 
   /** \brief Check if a given state is valid. This means checking for collisions and feasibility */
-  bool isStateValid(const planning_models::KinematicState &state, bool verbose = false) const;
+  bool isStateValid(const planning_models::KinematicState &state, const std::string &group = "", bool verbose = false) const;
 
   /** \brief Check if a given state is valid. This means checking for collisions, feasibility  and whether the user specified validity conditions hold as well */
-  bool isStateValid(const moveit_msgs::RobotState &state, const moveit_msgs::Constraints &constr, bool verbose = false) const;
+  bool isStateValid(const moveit_msgs::RobotState &state, const moveit_msgs::Constraints &constr, const std::string &group = "", bool verbose = false) const;
 
   /** \brief Check if a given state is valid. This means checking for collisions, feasibility  and whether the user specified validity conditions hold as well */
-  bool isStateValid(const planning_models::KinematicState &state, const moveit_msgs::Constraints &constr, bool verbose = false) const;
+  bool isStateValid(const planning_models::KinematicState &state, const moveit_msgs::Constraints &constr, const std::string &group = "", bool verbose = false) const;
 
   /** \brief Check if a given state is valid. This means checking for collisions, feasibility  and whether the user specified validity conditions hold as well */
-  bool isStateValid(const planning_models::KinematicState &state, const kinematic_constraints::KinematicConstraintSet &constr, bool verbose = false) const;
+  bool isStateValid(const planning_models::KinematicState &state, const kinematic_constraints::KinematicConstraintSet &constr, const std::string &group = "", bool verbose = false) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance and feasibility) */
   bool isPathValid(const moveit_msgs::RobotState &start_state,
                    const moveit_msgs::RobotTrajectory &trajectory,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const moveit_msgs::RobotState &start_state,
                    const moveit_msgs::RobotTrajectory &trajectory,
                    const moveit_msgs::Constraints& path_constraints,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const moveit_msgs::RobotState &start_state,
                    const moveit_msgs::RobotTrajectory &trajectory,
                    const moveit_msgs::Constraints& path_constraints,
                    const moveit_msgs::Constraints& goal_constraints,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const moveit_msgs::RobotState &start_state,
                    const moveit_msgs::RobotTrajectory &trajectory,
                    const moveit_msgs::Constraints& path_constraints,
                    const std::vector<moveit_msgs::Constraints>& goal_constraints,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const planning_models::KinematicState &start_state,
                    const moveit_msgs::RobotTrajectory &trajectory,
                    const moveit_msgs::Constraints& path_constraints,
                    const moveit_msgs::Constraints& goal_constraints,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const planning_models::KinematicState &start_state,
                    const moveit_msgs::RobotTrajectory &trajectory,
                    const moveit_msgs::Constraints& path_constraints,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const planning_models::KinematicState &start_state,
                    const moveit_msgs::RobotTrajectory &trajectory,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
   
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const planning_models::KinematicState &start_state,
                    const moveit_msgs::RobotTrajectory &trajectory,
                    const moveit_msgs::Constraints& path_constraints,
                    const std::vector<moveit_msgs::Constraints>& goal_constraints,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const planning_models::KinematicTrajectory &trajectory,
                    const moveit_msgs::Constraints& path_constraints,
                    const std::vector<moveit_msgs::Constraints>& goal_constraints,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance, feasibility and constraint satisfaction). It is also checked that the goal constraints are satisfied by the last state on the passed in trajectory. */
   bool isPathValid(const planning_models::KinematicTrajectory &trajectory,
                    const moveit_msgs::Constraints& path_constraints,
                    const moveit_msgs::Constraints& goal_constraints,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
 
   /** \brief Check if a given path is valid. Each state is checked for validity (collision avoidance and feasibility) */
   bool isPathValid(const planning_models::KinematicTrajectory &trajectory,
-                   bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
+                   const std::string &group = "", bool verbose = false, std::vector<std::size_t> *invalid_index = NULL) const;
   
   /** \brief Get the top \e max_costs cost sources for a specified trajectory. The resulting costs are stored in \e costs */
   void getCostSources(const planning_models::KinematicTrajectory &trajectory, std::size_t max_costs,
