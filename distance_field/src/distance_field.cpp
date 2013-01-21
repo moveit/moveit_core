@@ -35,11 +35,15 @@
 /* Author: Mrinal Kalakrishnan, Ken Anderson, E. Gil Jones */
 
 #include <moveit/distance_field/distance_field.h>
+#include <moveit/distance_field/distance_field_common.h>
+#include <geometric_shapes/body_operations.h>
+#include <eigen_conversions/eigen_msg.h>
 
 namespace distance_field
 {
 
-DistanceField::DistanceField(double resolution) :
+DistanceField::DistanceField(double size_x, double size_y, double size_z, double resolution,
+                             double origin_x, double origin_y, double origin_z) :
   resolution_(resolution),
   inv_twice_resolution_(1.0/(2.0*resolution_))
 {
@@ -188,19 +192,38 @@ void DistanceField::getGradientMarkers( double min_radius, double max_radius,
   }
 }
 
-void DistanceField::addCollisionMapToField(const moveit_msgs::CollisionMap &collision_map)
+void DistanceField::addShapeToField(const shapes::ShapeMsg& shape,
+                                    const geometry_msgs::Pose& pose)
 {
-  size_t num_boxes = collision_map.boxes.size();
-  EigenSTL::vector_Vector3d points;
-  points.reserve(num_boxes);
-  for (size_t i=0; i<num_boxes; ++i)
-  {
-    points.push_back(Eigen::Vector3d(collision_map.boxes[i].pose.position.x,
-                                     collision_map.boxes[i].pose.position.y,
-                                     collision_map.boxes[i].pose.position.z
-                                     ));
-  }
-  addPointsToField(points);
+  bodies::Body* body = bodies::constructBodyFromMsg(shape, pose);
+  EigenSTL::vector_Vector3d point_vec = determineCollisionPoints(body, resolution_);
+  delete body;
+  addPointsToField(point_vec);
+}
+
+void DistanceField::moveShapeInField(const shapes::ShapeMsg& shape,
+                                     const geometry_msgs::Pose& old_pose,
+                                     const geometry_msgs::Pose& new_pose)
+{
+  bodies::Body* body = bodies::constructBodyFromMsg(shape, old_pose);
+  EigenSTL::vector_Vector3d old_point_vec = determineCollisionPoints(body, resolution_);
+  Eigen::Affine3d new_pose_e;
+  tf::poseMsgToEigen(new_pose, new_pose_e);
+  body->setPose(new_pose_e);
+  EigenSTL::vector_Vector3d new_point_vec = determineCollisionPoints(body, resolution_);
+  delete body;
+  std::cout << "Old set " << old_point_vec.size() << " new set " << new_point_vec.size() << std::endl;
+  updatePointsInField(old_point_vec,
+                      new_point_vec);
+}
+
+void DistanceField::removeShapeFromField(const shapes::ShapeMsg& shape,
+                                         const geometry_msgs::Pose& pose)
+{
+  bodies::Body* body = bodies::constructBodyFromMsg(shape, pose);
+  EigenSTL::vector_Vector3d point_vec = determineCollisionPoints(body, resolution_);
+  delete body;
+  removePointsFromField(point_vec);
 }
 
 void DistanceField::getPlaneMarkers(distance_field::PlaneVisualizationType type, double length, double width,
