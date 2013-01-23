@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Intel Labs Pittsburgh
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the Intel Labs nor the names of its
+ *   * Neither the name of the Willow Garage nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,52 +32,38 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-/* Author: Siddhartha Srinivasa */
+/* Author: E. Gil Jones */
 
-#ifndef MOVEIT_DISTANCE_FIELD_PF_DISTANCE_FIELD_
-#define MOVEIT_DISTANCE_FIELD_PF_DISTANCE_FIELD_
+#ifndef MOVEIT_DISTANCE_FIELD_DISTANCE_FIELD_COMMON_
+#define MOVEIT_DISTANCE_FIELD_DISTANCE_FIELD_COMMON_
 
-#include <moveit/distance_field/distance_field.h>
+#include <eigen_stl_containers/eigen_stl_containers.h>
+#include <geometric_shapes/shapes.h>
+#include <geometric_shapes/bodies.h>
 
 namespace distance_field
 {
 
-/**
- * \brief A DistanceField implementation that uses a raster scanning type method by Felzenszwalb et. al.
- *
- * Implementation of "Distance Transforms of Sampled Functions", Pedro F. Felzenszwalb and
- * Daniel P. Huttenlocher, Cornell Computing and Information Science TR2004-1963
- */
-class PFDistanceField: public DistanceField<float>
+//determines a set of points at the indicated resolution that are inside the supplied body 
+EigenSTL::vector_Vector3d static inline determineCollisionPoints(const bodies::Body* body, double resolution)
 {
-public:
-  PFDistanceField(double size_x, double size_y, double size_z, double resolution,
-      double origin_x, double origin_y, double origin_z);
-
-  virtual ~PFDistanceField();
-
-
-  typedef std::vector<float> FloatArray;
-  typedef std::vector<int>   IntArray;
-
-  virtual void addPointsToField(const EigenSTL::vector_Vector3d &points);
-  virtual void reset();
-
-  const float DT_INF;
-
-private:
-  inline float sqr(float x) { return x*x; }
-  void dt(const FloatArray& f, size_t nn, FloatArray& ft, IntArray& v, FloatArray& z);
-  void computeDT();
-  virtual double getDistance(const float& object) const;
-
-};
-
-////////////////////////// inline functions follow ////////////////////////////////////////
-
-inline double PFDistanceField::getDistance(const float& object) const
-{
-  return sqrt(object)*this->resolution_[DIM_X];
+  EigenSTL::vector_Vector3d ret_vec;
+  if(!body) return ret_vec;
+  bodies::BoundingSphere sphere;
+  body->computeBoundingSphere(sphere);
+  //ROS_INFO_STREAM("Radius is " << sphere.radius);
+  //ROS_INFO_STREAM("Center is " << sphere.center.z() << " " << sphere.center.y() << " " << sphere.center.z());
+  for(double xval = sphere.center.x()-sphere.radius-resolution; xval <= sphere.center.x()+sphere.radius+resolution; xval += resolution) {
+    for(double yval = sphere.center.y()-sphere.radius-resolution; yval <= sphere.center.y()+sphere.radius+resolution; yval += resolution) {
+      for(double zval = sphere.center.z()-sphere.radius-resolution; zval <= sphere.center.z()+sphere.radius+resolution; zval += resolution) {
+        Eigen::Vector3d rel_vec(xval, yval, zval);
+        if(body->containsPoint(rel_vec)) {
+          ret_vec.push_back(rel_vec);
+        }
+      }
+    }
+  }
+  return ret_vec;
 }
 
 }
