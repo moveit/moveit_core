@@ -87,9 +87,9 @@ bool callAdapter1(const PlanningRequestAdapter *adapter,
   {
     return adapter->adaptAndPlan(planner, planning_scene, req, res, added_path_index);
   }
-  catch(...)
+  catch(std::runtime_error &ex)
   {
-    logError("Exception caught executing adapter '%s'", adapter->getDescription().c_str());
+    logError("Exception caught executing adapter '%s': %s", adapter->getDescription().c_str(), ex.what());
     added_path_index.clear();
     return planner->solve(planning_scene, req, res);
   }
@@ -106,9 +106,9 @@ bool callAdapter2(const PlanningRequestAdapter *adapter,
   {
     return adapter->adaptAndPlan(planner, planning_scene, req, res, added_path_index);
   }
-  catch(...)
+  catch(std::runtime_error &ex)
   {    
-    logError("Exception caught executing adapter '%s'", adapter->getDescription().c_str());
+    logError("Exception caught executing adapter '%s': %s", adapter->getDescription().c_str(), ex.what());
     added_path_index.clear();
     return planner(planning_scene, req, res);
   }
