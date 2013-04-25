@@ -42,6 +42,7 @@
 #include <vector>
 #include <utility>
 #include <Eigen/Geometry>
+#include <eigen_stl_containers/eigen_stl_vector_container.h>
 #include <geometric_shapes/shapes.h>
 #include <geometric_shapes/shape_messages.h>
 
@@ -179,9 +180,15 @@ private:
   /** \brief The collision geometry of the link as a message */
   shapes::ShapeMsg          shape_msg_;
 
-  /** \brief The extents if shape (dimensions of axis aligned bounding box when shape is at origin */
+  /** \brief The extents of shape (dimensions of axis aligned bounding box when shape is at origin */
   Eigen::Vector3d           shape_extents_;
-  
+
+  /** \brief Centers of a set of spheres bounding the link (when shape is at origin) */
+  EigenSTL::vector_Vector3d sphere_centers_;
+
+  /** \brief Radii of a set of spheres bounding the link */
+  std::vector<double>       sphere_radii_;
+
   /** \brief Filename associated with the visual geometry mesh of this link. If empty, no mesh was used. */
   std::string               visual_mesh_filename_;
 
