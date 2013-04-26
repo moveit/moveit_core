@@ -877,6 +877,20 @@ robot_model::LinkModel* robot_model::RobotModel::constructLinkModel(const urdf::
     result->shape_extents_ = Eigen::Vector3d(0.0, 0.0, 0.0);
   }
 
+  // setup bounding spheres
+  if (result->shape_)
+  {
+    // by default use a single sphere that bounds the entire link
+    result->sphere_centers_.resize(1);
+    result->sphere_radii_.resize(1);
+    shapes::computeShapeBoundingSphere(result->shape_.get(), result->sphere_centers_[0], result->sphere_radii_[0]);
+    if (result->sphere_radii_[0] == 0.0)
+    {
+      result->sphere_centers_.clear();
+      result->sphere_radii_.clear();
+    }
+  }
+
   // figure out visual mesh (try visual urdf tag first, collision tag otherwise
   if (urdf_link->visual && urdf_link->visual->geometry)
   {
