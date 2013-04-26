@@ -151,6 +151,18 @@ public:
     return visual_mesh_scale_;
   }
   
+  /** \brief Get the collision sphere centers (in link collision frame) for this link */
+  const EigenSTL::vector_Vector3d& getCollisionSphereCenters() const
+  {
+    return collision_sphere_centers_;
+  }
+  
+  /** \brief Get the collision sphere centers (in link collision frame) for this link */
+  const std::vector<double>& getCollisionSphereRadii() const
+  {
+    return collision_sphere_radii_;
+  }
+  
 private:
   
   /** \brief Name of the link */
@@ -184,10 +196,10 @@ private:
   Eigen::Vector3d           shape_extents_;
 
   /** \brief Centers of a set of spheres bounding the link (when shape is at origin) */
-  EigenSTL::vector_Vector3d sphere_centers_;
+  EigenSTL::vector_Vector3d collision_sphere_centers_;
 
   /** \brief Radii of a set of spheres bounding the link */
-  std::vector<double>       sphere_radii_;
+  std::vector<double>       collision_sphere_radii_;
 
   /** \brief Filename associated with the visual geometry mesh of this link. If empty, no mesh was used. */
   std::string               visual_mesh_filename_;
