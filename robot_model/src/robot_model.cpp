@@ -671,7 +671,7 @@ robot_model::JointModel* robot_model::RobotModel::buildRecursive(LinkModel *pare
   if (joint->getType() == JointModel::REVOLUTE && static_cast<const RevoluteJointModel*>(joint)->isContinuous())
     continuous_joint_model_vector_const_.push_back(joint);
   joint->parent_link_model_ = parent;
-  joint->child_link_model_ = constructLinkModel(link, parent_map);
+  joint->child_link_model_ = constructLinkModel(link, parent_map, srdf_model);
   link_model_map_[joint->child_link_model_->name_] = joint->child_link_model_;
   joint->child_link_model_->tree_index_ = link_model_vector_.size();
   link_model_vector_.push_back(joint->child_link_model_);
@@ -842,7 +842,7 @@ static inline Eigen::Affine3d urdfPose2Affine3d(const urdf::Pose &pose)
 
 }
 
-robot_model::LinkModel* robot_model::RobotModel::constructLinkModel(const urdf::Link *urdf_link, const std::map<const urdf::Link*, std::pair<const urdf::Link*, const urdf::Joint*> > &parent_map)
+robot_model::LinkModel* robot_model::RobotModel::constructLinkModel(const urdf::Link *urdf_link, const std::map<const urdf::Link*, std::pair<const urdf::Link*, const urdf::Joint*> > &parent_map, const srdf::Model &srdf_model)
 {
   LinkModel *result = new LinkModel();
   result->name_ = urdf_link->name;
@@ -875,6 +875,35 @@ robot_model::LinkModel* robot_model::RobotModel::constructLinkModel(const urdf::
     result->collision_origin_transform_.setIdentity();
     result->shape_.reset();
     result->shape_extents_ = Eigen::Vector3d(0.0, 0.0, 0.0);
+  }
+
+  // setup collision spheres
+  const srdf::Model::LinkCollisionSpheres* spheres = srdf_model.getLinkCollisionSpheres(result->name_);
+  if (spheres && !spheres->spheres_.empty())
+  {
+    for (std::vector<srdf::Model::CollisionSphere>::const_iterator sphere_it = spheres->spheres_.begin() ; sphere_it != spheres->spheres_.end() ; ++sphere_it)
+    {
+      result->collision_sphere_centers_.push_back(Eigen::Vector3d(sphere_it->center_[0], sphere_it->center_[1], sphere_it->center_[2]));
+      result->collision_sphere_radii_.push_back(sphere_it->radius_);
+    }
+  }
+  if (result->collision_sphere_radii_.empty() && result->shape_)
+  {
+    // by default use a single sphere that bounds the entire link
+    result->collision_sphere_centers_.resize(1);
+    result->collision_sphere_radii_.resize(1);
+    shapes::computeShapeBoundingSphere(result->shape_.get(), result->collision_sphere_centers_[0], result->collision_sphere_radii_[0]);
+    if (result->collision_sphere_radii_[0] == 0.0)
+    {
+      result->collision_sphere_centers_.clear();
+      result->collision_sphere_radii_.clear();
+    }
+  }
+  if (result->collision_sphere_radii_.size() == 1 && result->collision_sphere_radii_[0] == 0.0)
+  {
+    // if only one sphere and radius is 0 then skip sphere collision for this link.
+    result->collision_sphere_centers_.clear();
+    result->collision_sphere_radii_.clear();
   }
 
   // figure out visual mesh (try visual urdf tag first, collision tag otherwise

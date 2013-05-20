@@ -433,7 +433,7 @@ protected:
   JointModel* constructJointModel(const urdf::Joint *urdf_joint_model, const urdf::Link *child_link, const srdf::Model &srdf_model);
 
   /** \brief Given a urdf link, build the corresponding LinkModel object*/
-  LinkModel* constructLinkModel(const urdf::Link *urdf_link, const std::map<const urdf::Link*, std::pair<const urdf::Link*, const urdf::Joint*> > &parent_map );
+  LinkModel* constructLinkModel(const urdf::Link *urdf_link, const std::map<const urdf::Link*, std::pair<const urdf::Link*, const urdf::Joint*> > &parent_map, const srdf::Model &srdf_model );
 
   /** \brief Given a geometry spec from the URDF and a filename (for a mesh), construct the corresponding shape object*/
   shapes::ShapePtr constructShape(const urdf::Geometry *geom);
