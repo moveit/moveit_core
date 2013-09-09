@@ -130,12 +130,15 @@ public:
   /** \brief Check if a joint exists. Return true if it does. */
   bool hasJointModel(const std::string &name) const;
 
-  /** \brief Get a joint by its name. Throw an exception when the joint is missing. */
+  /** \brief Get a joint by its name. Throw an error when the joint is missing. */
   const JointModel* getJointModel(const std::string &joint) const;
 
-  /** \brief Get a joint by its name. Throw an exception when the joint is missing. */
+  /** \brief Get a joint by its name. Throw an error when the joint is missing. */
   JointModel* getJointModel(const std::string &joint);
-  
+
+  /** \brief Get a joint by its index. Throw an error when the joint is missing. */
+  const JointModel* getJointModel(std::size_t joint_index) const;
+
   /** \brief Get the array of joints, in the order they appear
       in the robot state. */
   const std::vector<const JointModel*>& getJointModels() const
@@ -397,6 +400,9 @@ public:
   
   void getMissingVariableNames(const std::vector<std::string> &variables, std::vector<std::string> &missing_variables) const;
   
+  /** \brief Get the index of a variable in the robot state or return false if the variable does not exist */
+  bool getVariableIndex(const std::string &variable, int &index) const;
+
   /** \brief Get the index of a variable in the robot state */
   int getVariableIndex(const std::string &variable) const;
   

@@ -1062,6 +1062,17 @@ moveit::core::JointModel* moveit::core::RobotModel::getJointModel(const std::str
   return NULL;
 }
 
+const moveit::core::JointModel* moveit::core::RobotModel::getJointModel(std::size_t joint_index) const
+{
+  if( joint_index < 0 || joint_index >= joint_model_vector_.size() )
+  {
+    logError("Joint index '%i' out of bounds of joints in model '%s'", joint_index, model_name_.c_str());
+    return NULL;
+  }
+  return joint_model_vector_[joint_index];
+}
+
+
 const moveit::core::LinkModel* moveit::core::RobotModel::getLinkModel(const std::string &name) const
 {
   LinkModelMap::const_iterator it = link_model_map_.find(name);
@@ -1132,11 +1143,35 @@ void moveit::core::RobotModel::getMissingVariableNames(const std::vector<std::st
         missing_variables.push_back(variable_names_[i]);
 }
 
+bool moveit::core::RobotModel::getVariableIndex(const std::string &variable, int &index) const
+{
+  VariableIndexMap::const_iterator it = joint_variables_index_map_.find(variable);
+  if (it == joint_variables_index_map_.end())
+  {
+    return false;
+  }
+
+  index = it->second;
+  return true;
+}
+
 int moveit::core::RobotModel::getVariableIndex(const std::string &variable) const
 {
   VariableIndexMap::const_iterator it = joint_variables_index_map_.find(variable);
   if (it == joint_variables_index_map_.end())
+  {
+    // Error debug information
+    logError("Available variables:");
+
+    for (VariableIndexMap::const_iterator full_it = joint_variables_index_map_.begin();
+         full_it != joint_variables_index_map_.end(); full_it++)
+    {
+        logError("  %i \t %s", full_it->second, full_it->first.c_str());
+    }
+
     throw Exception("Variable '" + variable + "' is not known to model '" + model_name_ + "'");
+  }
+
   return it->second;
 }
 
