@@ -455,7 +455,7 @@ void moveit::core::RobotState::updateCollisionBodyTransforms()
   }
 }
 
-void moveit::core::RobotState::updateLinkTransforms()
+void moveit::core::RobotState::updateLinkTransforms() const
 {
   if (dirty_link_transforms_ != NULL)
   {
@@ -468,7 +468,7 @@ void moveit::core::RobotState::updateLinkTransforms()
   }
 }
 
-void moveit::core::RobotState::updateLinkTransformsInternal(const JointModel *start)
+void moveit::core::RobotState::updateLinkTransformsInternal(const JointModel *start) const
 {  
   const std::vector<const LinkModel*> &links = start->getDescendantLinkModels();
   if (links.size() > 0)

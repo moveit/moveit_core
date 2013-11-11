@@ -898,7 +898,7 @@ as the new values that correspond to the group */
   void updateCollisionBodyTransforms();
   
   /** \brief Update the reference frame transforms for links. This call is needed before using the transforms of links for coordinate transforms. */
-  void updateLinkTransforms();
+  void updateLinkTransforms() const;
   
   /** \brief Update all transforms. */
   void update(bool force = false);
@@ -912,17 +912,6 @@ as the new values that correspond to the group */
   /** \brief Update the state after setting a particular link to the input global transform pose.*/
   void updateStateWithLinkAt(const LinkModel *link, const Eigen::Affine3d& transform, bool backward = false);
 
-  const Eigen::Affine3d& getGlobalLinkTransform(const std::string &link_name)
-  {
-    return getGlobalLinkTransform(robot_model_->getLinkModel(link_name));
-  }
-  
-  const Eigen::Affine3d& getGlobalLinkTransform(const LinkModel *link)
-  {
-    updateLinkTransforms();
-    return global_link_transforms_[link->getLinkIndex()];
-  }
-  
   const Eigen::Affine3d& getCollisionBodyTransforms(const std::string &link_name, std::size_t index)
   {
     return getCollisionBodyTransform(robot_model_->getLinkModel(link_name), index);
@@ -958,7 +947,7 @@ as the new values that correspond to the group */
   
   const Eigen::Affine3d& getGlobalLinkTransform(const LinkModel *link) const
   {
-    assert(checkLinkTransforms());
+    updateLinkTransforms();
     return global_link_transforms_[link->getLinkIndex()];
   }
   
@@ -1304,7 +1293,7 @@ private:
     }
   }
   
-  void updateLinkTransformsInternal(const JointModel *start);
+  void updateLinkTransformsInternal(const JointModel *start) const;
   
   void getMissingKeys(const std::map<std::string, double> &variable_map, std::vector<std::string> &missing_variables) const;
   void getStateTreeJointString(std::ostream& ss, const JointModel* jm, const std::string& pfx0, bool last) const;
@@ -1330,16 +1319,16 @@ private:
   bool                                   has_acceleration_;
   bool                                   has_effort_;
   
-  const JointModel                      *dirty_link_transforms_;
-  const JointModel                      *dirty_collision_body_transforms_;
+  mutable const JointModel              *dirty_link_transforms_;
+  mutable const JointModel              *dirty_collision_body_transforms_;
   
   Eigen::Affine3d                       *variable_joint_transforms_; // this points to an element in transforms_, so it is aligned 
-  Eigen::Affine3d                       *global_link_transforms_;  // this points to an element in transforms_, so it is aligned 
+  mutable Eigen::Affine3d               *global_link_transforms_;  // this points to an element in transforms_, so it is aligned 
   Eigen::Affine3d                       *global_collision_body_transforms_;  // this points to an element in transforms_, so it is aligned 
   unsigned char                         *dirty_joint_transforms_;
   
   /** \brief The attached bodies that are part of this state (from all links) */
-  std::map<std::string, AttachedBody*>   attached_body_map_;
+  mutable std::map<std::string, AttachedBody*>   attached_body_map_;
 
   /** \brief This event is called when there is a change in the attached bodies for this state;
       The event specifies the body that changed and whether it was just attached or about to be detached. */
