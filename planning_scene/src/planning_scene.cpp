@@ -629,6 +629,16 @@ const collision_detection::CollisionRobotPtr& planning_scene::PlanningScene::get
   return active_collision_->crobot_;
 }
 
+const collision_detection::CollisionRobotPtr& planning_scene::PlanningScene::getCollisionRobotUnpaddedNonConst()
+{
+  if (!active_collision_->crobot_unpadded_)
+  {
+    active_collision_->crobot_unpadded_ = active_collision_->alloc_->allocateRobot(active_collision_->parent_->getCollisionRobotUnpadded());
+    active_collision_->crobot_unpadded_const_ = active_collision_->crobot_unpadded_;
+  }
+  return active_collision_->crobot_unpadded_;
+}
+
 robot_state::RobotState& planning_scene::PlanningScene::getCurrentStateNonConst()
 {
   if (!kstate_)
