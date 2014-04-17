@@ -1661,7 +1661,7 @@ double moveit::core::RobotState::computeCartesianPath(const JointModelGroup *gro
     if (fabs(wp_percentage_solved - 1.0) < std::numeric_limits<double>::epsilon())
     {
       unsigned int offset_index = 0;
-      if(i > 0 && waypoints.size() > 1)
+      if(i > 0 && waypoint_traj.size() > 1)
 	offset_index = 1;
       percentage_solved = (double)(i + 1) / (double)waypoints.size();
       traj.insert(traj.end(), waypoint_traj.begin()+offset_index, waypoint_traj.end());
