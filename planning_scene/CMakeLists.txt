@@ -4,7 +4,6 @@ add_library(${MOVEIT_LIB_NAME} src/planning_scene.cpp)
 
 target_link_libraries(${MOVEIT_LIB_NAME} 
   moveit_robot_model
-  moveit_robot_state
   moveit_exceptions
   moveit_transforms
   moveit_collision_detection_fcl

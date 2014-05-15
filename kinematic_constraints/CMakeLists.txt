@@ -5,7 +5,7 @@ add_library(${MOVEIT_LIB_NAME}
   src/utils.cpp)
 
 target_link_libraries(${MOVEIT_LIB_NAME}
-  moveit_robot_model moveit_kinematics_base moveit_robot_state moveit_collision_detection_fcl
+  moveit_robot_model moveit_kinematics_base moveit_collision_detection_fcl
   ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(${MOVEIT_LIB_NAME} ${catkin_EXPORTED_TARGETS})
 
