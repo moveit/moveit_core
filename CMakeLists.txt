@@ -48,11 +48,9 @@ set(THIS_PACKAGE_INCLUDE_DIRS
     controller_manager/include
     distance_field/include
     dynamics_solver/include
-    kinematics_base/include
     kinematics_metrics/include
     robot_model/include
     transforms/include
-    robot_state/include
     robot_trajectory/include
     kinematic_constraints/include
     macros/include
@@ -71,10 +69,8 @@ catkin_package(
   LIBRARIES
     moveit_exceptions
     moveit_background_processing
-    moveit_kinematics_base
     moveit_robot_model
     moveit_transforms
-    moveit_robot_state
     moveit_robot_trajectory
     moveit_planning_interface
     moveit_collision_detection
@@ -134,12 +130,10 @@ add_subdirectory(backtrace)
 add_subdirectory(exceptions)
 add_subdirectory(profiler)
 add_subdirectory(background_processing)
-add_subdirectory(kinematics_base)
 add_subdirectory(controller_manager)
 add_subdirectory(sensor_manager)
 add_subdirectory(robot_model)
 add_subdirectory(transforms)
-add_subdirectory(robot_state)
 add_subdirectory(robot_trajectory)
 add_subdirectory(collision_detection)
 add_subdirectory(collision_detection_fcl)
