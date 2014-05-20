@@ -13,9 +13,10 @@ add_library(${MOVEIT_LIB_NAME}
   src/robot_state.cpp
   src/attached_body.cpp
   src/conversions.cpp
+  src/kinematics_base.cpp
   )
 
-target_link_libraries(${MOVEIT_LIB_NAME} moveit_profiler moveit_exceptions moveit_kinematics_base moveit_transforms ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${MOVEIT_LIB_NAME} moveit_profiler moveit_exceptions moveit_transforms ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(${MOVEIT_LIB_NAME} ${catkin_EXPORTED_TARGETS})
 
 if(${CATKIN_ENABLE_TESTING})
