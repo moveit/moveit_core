@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* Author: Ioan Sucan, Dave Coleman */
 
 #ifndef MOVEIT_PLANNING_REQUEST_ADAPTER_PLANNING_REQUEST_ADAPTER_
 #define MOVEIT_PLANNING_REQUEST_ADAPTER_PLANNING_REQUEST_ADAPTER_
@@ -41,7 +41,12 @@
 #include <moveit/planning_scene/planning_scene.h>
 #include <boost/function.hpp>
 
-/** \brief Generic interface to adapting motion planning requests */
+/** \brief Generic interface to adapting motion planning requests
+ *
+ *  The PlannRequestAdapter class is both the class used for all the adapters, as well as a
+ *  custom version used to wrap a traditional motion planner into looking like an adapter
+ *
+ */
 namespace planning_request_adapter
 {
 
@@ -66,13 +71,15 @@ public:
   bool adaptAndPlan(const planning_interface::PlannerManagerPtr &planner,
                     const planning_scene::PlanningSceneConstPtr& planning_scene,
                     const planning_interface::MotionPlanRequest &req,
-                    planning_interface::MotionPlanResponse &res) const;
+                    planning_interface::MotionPlanResponse &res,
+                    planning_interface::PlanningContextPtr &context) const;
 
   bool adaptAndPlan(const planning_interface::PlannerManagerPtr &planner,
                     const planning_scene::PlanningSceneConstPtr& planning_scene,
                     const planning_interface::MotionPlanRequest &req,
                     planning_interface::MotionPlanResponse &res,
-                    std::vector<std::size_t> &added_path_index) const;
+                    std::vector<std::size_t> &added_path_index,
+                    planning_interface::PlanningContextPtr &context) const;
 
   /** \brief Adapt the planning request if needed, call the planner
       function \e planner and update the planning response if
@@ -83,7 +90,8 @@ public:
                             const planning_scene::PlanningSceneConstPtr& planning_scene,
                             const planning_interface::MotionPlanRequest &req,
                             planning_interface::MotionPlanResponse &res,
-                            std::vector<std::size_t> &added_path_index) const = 0;
+                            std::vector<std::size_t> &added_path_index,
+                            planning_interface::PlanningContextPtr &context) const = 0;
 
 };
 
@@ -113,6 +121,17 @@ public:
                     const planning_interface::MotionPlanRequest &req,
                     planning_interface::MotionPlanResponse &res,
                     std::vector<std::size_t> &added_path_index) const;
+
+  /**
+   * \brief This is the main starting point of the planning request pipeline. The passed in 'planner' in this function is the actual
+   *        motion planning algorithm. It is called last, however, after all the provided adapters are first called in a chain
+   */
+  bool adaptAndPlan(const planning_interface::PlannerManagerPtr &planner,
+                    const planning_scene::PlanningSceneConstPtr& planning_scene,
+                    const planning_interface::MotionPlanRequest &req,
+                    planning_interface::MotionPlanResponse &res,
+                    std::vector<std::size_t> &added_path_index,
+                    planning_interface::PlanningContextPtr &context) const;
 
 private:
   std::vector<PlanningRequestAdapterConstPtr> adapters_;
