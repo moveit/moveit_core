@@ -171,7 +171,8 @@ bool constraint_samplers::JointConstraintSampler::sample(robot_state::RobotState
 }
 
 bool constraint_samplers::JointConstraintSampler::project(robot_state::RobotState &state,
-                                                          unsigned int max_attempts)
+                                                          unsigned int max_attempts,
+                                                          bool use_state_as_seed)
 {
   return sample(state, state, max_attempts);
 }
@@ -489,7 +490,7 @@ bool constraint_samplers::IKConstraintSampler::sample(robot_state::RobotState &s
   return sampleHelper(state, reference_state, max_attempts, false);
 }
 
-bool constraint_samplers::IKConstraintSampler::sampleHelper(robot_state::RobotState &state, const robot_state::RobotState &reference_state, unsigned int max_attempts, bool project)
+bool constraint_samplers::IKConstraintSampler::sampleHelper(robot_state::RobotState &state, const robot_state::RobotState &reference_state, unsigned int max_attempts, bool use_state_as_seed)
 {
   if (!is_valid_)
   {
@@ -522,16 +523,17 @@ bool constraint_samplers::IKConstraintSampler::sampleHelper(robot_state::RobotSt
     ik_query.orientation.z = quat.z();
     ik_query.orientation.w = quat.w();
 
-    if (callIK(ik_query, adapted_ik_validity_callback, ik_timeout_, state, project && a == 0))
+    if (callIK(ik_query, adapted_ik_validity_callback, ik_timeout_, state, use_state_as_seed && a == 0))
       return true;
   }
   return false;
 }
 
 bool constraint_samplers::IKConstraintSampler::project(robot_state::RobotState &state,
-                                                       unsigned int max_attempts)
+                                                       unsigned int max_attempts,
+                                                       bool use_state_as_seed)
 {
-  return sampleHelper(state, state, max_attempts, true);
+  return sampleHelper(state, state, max_attempts, use_state_as_seed);
 }
 
 bool constraint_samplers::IKConstraintSampler::validate(robot_state::RobotState &state) const
