@@ -122,7 +122,8 @@ public:
                       unsigned int max_attempts);
 
   virtual bool project(robot_state::RobotState &state,
-                       unsigned int max_attempts);
+                       unsigned int max_attempts,
+                       bool use_state_as_seed = true);
 
   /**
    * \brief Gets the number of constrained joints - joints that have an
@@ -453,7 +454,8 @@ public:
                       unsigned int max_attempts);
 
   virtual bool project(robot_state::RobotState &state,
-                       unsigned int max_attempts);
+                       unsigned int max_attempts,
+                       bool use_state_as_seed=true);
   /**
    * \brief Returns a pose that falls within the constraint regions.
    *
@@ -512,7 +514,7 @@ protected:
    */
   bool callIK(const geometry_msgs::Pose &ik_query, const kinematics::KinematicsBase::IKCallbackFn &adapted_ik_validity_callback,
               double timeout, robot_state::RobotState &state, bool use_as_seed);
-  bool sampleHelper(robot_state::RobotState &state, const robot_state::RobotState &reference_state, unsigned int max_attempts, bool project);
+  bool sampleHelper(robot_state::RobotState &state, const robot_state::RobotState &reference_state, unsigned int max_attempts, bool use_state_as_seed);
   bool validate(robot_state::RobotState &state) const;
 
   random_numbers::RandomNumberGenerator random_number_generator_; /**< \brief Random generator used by the sampler */
