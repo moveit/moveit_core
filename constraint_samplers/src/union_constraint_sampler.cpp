@@ -140,10 +140,10 @@ bool constraint_samplers::UnionConstraintSampler::sample(robot_state::RobotState
   return true;
 }
 
-bool constraint_samplers::UnionConstraintSampler::project(robot_state::RobotState &state, unsigned int max_attempts)
+bool constraint_samplers::UnionConstraintSampler::project(robot_state::RobotState &state, unsigned int max_attempts, bool use_state_as_seed)
 {
   for (std::size_t i = 0 ; i < samplers_.size() ; ++i)
-    if (!samplers_[i]->project(state, max_attempts))
+    if (!samplers_[i]->project(state, max_attempts, use_state_as_seed))
       return false;
   return true;
 }
