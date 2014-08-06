@@ -1301,13 +1301,15 @@ as the new values that correspond to the group */
     const_cast<const RobotState*>(this)->getRobotMarkers(arr, link_names, include_attached);
   }
   
-  void printStatePositions(std::ostream &out) const;
+  void printStatePositions(std::ostream &out = std::cout) const;
   
-  void printStateInfo(std::ostream &out) const;
+  void printStateInfo(std::ostream &out = std::cout) const;
   
-  void printTransforms(std::ostream &out) const;
+  void printTransforms(std::ostream &out = std::cout) const;
+
+  void printTransform(const Eigen::Affine3d &transform, std::ostream &out = std::cout) const;
   
-  void printDirtyInfo(std::ostream &out) const;
+  void printDirtyInfo(std::ostream &out = std::cout) const;
   
   std::string getStateTreeString(const std::string& prefix = "") const;
   
@@ -1361,7 +1363,6 @@ private:
   
   void getMissingKeys(const std::map<std::string, double> &variable_map, std::vector<std::string> &missing_variables) const;
   void getStateTreeJointString(std::ostream& ss, const JointModel* jm, const std::string& pfx0, bool last) const;
-  void printTransform(const Eigen::Affine3d &transform, std::ostream &out) const;
 
   /** \brief This function is only called in debug mode */
   bool checkJointTransforms(const JointModel *joint) const;
