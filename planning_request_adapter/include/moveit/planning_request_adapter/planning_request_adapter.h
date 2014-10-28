@@ -43,7 +43,7 @@
 
 /** \brief Generic interface to adapting motion planning requests
  *
- *  The PlannRequestAdapter class is both the class used for all the adapters, as well as a
+ *  The PlanningRequestAdapter class is both the class used for all the adapters, as well as a
  *  custom version used to wrap a traditional motion planner into looking like an adapter
  *
  */

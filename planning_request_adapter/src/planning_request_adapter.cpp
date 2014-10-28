@@ -166,9 +166,8 @@ bool planning_request_adapter::PlanningRequestAdapterChain::adaptAndPlan(const p
                                                                          planning_interface::MotionPlanResponse &res,
                                                                          std::vector<std::size_t> &added_path_index) const
 {
-  std::vector<std::size_t> dummy;
   planning_interface::PlanningContextPtr context;
-  return adaptAndPlan(planner, planning_scene, req, res, dummy, context);
+  return adaptAndPlan(planner, planning_scene, req, res, added_path_index, context);
 }
 
 bool planning_request_adapter::PlanningRequestAdapterChain::adaptAndPlan(const planning_interface::PlannerManagerPtr &planner,
