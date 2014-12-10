@@ -2,8 +2,8 @@
 Changelog for package moveit_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.10 (2014-12-09)
+-------------------
 * Fix `Manipulability Index Error for few DOF <https://github.com/ros-planning/moveit_core/issues/164>`_
 * Removed problematic assertion from default_constraint_samplers.cpp
 * Fixed missing test depends for tf_conversions
