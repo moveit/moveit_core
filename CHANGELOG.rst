@@ -2,6 +2,35 @@
 Changelog for package moveit_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix `Manipulability Index Error for few DOF <https://github.com/ros-planning/moveit_core/issues/164>`_
+* Removed problematic assertion from default_constraint_samplers.cpp
+* Fixed missing test depends for tf_conversions
+* Allow setFromIK() with multiple poses to single IK solver
+* Added necessary const to recently added function
+* Added const where needed
+* Improved debug output
+* Removed duplicate functionality poseToMsg function
+* New setToRandomPositions function with custom rand num generator
+* Include angles' variables
+* Getter for all tips (links) of every end effector in a joint model group
+* New robot state to (file) stream conversion functions, documentation improvements
+* Added default values for iostream in print statements
+* Change PlanningScene constructor to RobotModelConstPtr
+* Documentation and made printTransform() public
+* Removed duplicate getSubgroups() function, added prefixes for changed log messages
+* Addressed consistency_limits issue
+* Reduced unnecessary joint position copying
+* Added getSubgroups() helper function to joint model groups
+* Maintain ordering of poses in order that IK solver expects
+* Added new setToRandomPositions function that allows custom random number generator to be specified
+* Split setToIKSolverFrame() into two functions
+* Add check for correct solver type
+* Allowed setFromIK to do whole body IK solving with multiple tips
+* Added angles as test dependency of constraint sampler
+* Contributors: Dave Coleman, Dave Hershberger, Ioan A Sucan, Sachin Chitta, costashatz, hersh
+
 0.5.9 (2014-06-23)
 ------------------
 * Fixed bug in RevoluteJointModel::distance() giving large negative numbers.
