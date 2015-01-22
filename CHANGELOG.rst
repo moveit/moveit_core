@@ -2,6 +2,11 @@
 Changelog for package moveit_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added missing parameter to logWarn in planning_scene.
+* Contributors: Christian Dornhege, Ioan A Sucan
+
 0.5.10 (2014-12-09)
 -------------------
 * Fix `Manipulability Index Error for few DOF <https://github.com/ros-planning/moveit_core/issues/164>`_
