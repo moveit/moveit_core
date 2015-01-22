@@ -2,8 +2,8 @@
 Changelog for package moveit_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.11 (2015-01-21)
+-------------------
 * Added missing parameter to logWarn in planning_scene.
 * Contributors: Christian Dornhege, Ioan A Sucan
 
