@@ -1270,7 +1270,10 @@ void planning_scene::PlanningScene::removeAllCollisionObjects()
   const std::vector<std::string> &object_ids = world_->getObjectIds();
   for (std::size_t i = 0; i < object_ids.size(); ++i)
     if (object_ids[i] != OCTOMAP_NS)
+    {
       world_->removeObject(object_ids[i]);
+      getAllowedCollisionMatrixNonConst().removeEntry(object_ids[i]);
+    }
 }
 
 void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::OctomapWithPose &map)
@@ -1640,7 +1643,10 @@ bool planning_scene::PlanningScene::processCollisionObjectMsg(const moveit_msgs:
       removeAllCollisionObjects();
     }
     else
+    {
       world_->removeObject(object.id);
+      getAllowedCollisionMatrixNonConst().removeEntry(object.id);
+    }
     return true;
   }
   else if (object.operation == moveit_msgs::CollisionObject::MOVE)
@@ -1648,7 +1654,7 @@ bool planning_scene::PlanningScene::processCollisionObjectMsg(const moveit_msgs:
     if (world_->hasObject(object.id))
     {
       if (!object.primitives.empty() || !object.meshes.empty() || !object.planes.empty())
-        logWarn("Move operation for object '%s' ignores the geometry specified in the message.");
+        logWarn("Move operation for object '%s' ignores the geometry specified in the message.", object.id.c_str());
 
       const Eigen::Affine3d &t = getTransforms().getTransform(object.header.frame_id);
       EigenSTL::vector_Affine3d new_poses;
