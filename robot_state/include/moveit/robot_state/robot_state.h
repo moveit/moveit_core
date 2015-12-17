@@ -721,6 +721,95 @@ as the new values that correspond to the group */
   /** @} */
 
 
+  /** \name Getting and setting group accelerations
+   *  @{
+   */
+
+  /** \brief Given accelerations for the variables that make up a group, in the order found in the group (including values of mimic joints), set those
+as the new values that correspond to the group */
+  void setJointGroupAccelerations(const std::string &joint_group_name, const double *gstate)
+  {
+    const JointModelGroup *jmg = robot_model_->getJointModelGroup(joint_group_name);
+    if (jmg)
+      setJointGroupAccelerations(jmg, gstate);
+  }
+
+  /** \brief Given accelerations for the variables that make up a group, in the order found in the group (including values of mimic joints), set those
+as the new values that correspond to the group */
+  void setJointGroupAccelerations(const std::string &joint_group_name, const std::vector<double> &gstate)
+  {
+    const JointModelGroup *jmg = robot_model_->getJointModelGroup(joint_group_name);
+    if (jmg)
+      setJointGroupAccelerations(jmg, &gstate[0]);
+  }
+
+  /** \brief Given accelerations for the variables that make up a group, in the order found in the group (including values of mimic joints), set those
+as the new values that correspond to the group */
+  void setJointGroupAccelerations(const JointModelGroup *group, const std::vector<double> &gstate)
+  {
+    setJointGroupAccelerations(group, &gstate[0]);
+  }
+
+  /** \brief Given accelerations for the variables that make up a group, in the order found in the group (including values of mimic joints), set those
+as the new values that correspond to the group */
+  void setJointGroupAccelerations(const JointModelGroup *group, const double *gstate);
+
+  /** \brief Given accelerations for the variables that make up a group, in the order found in the group (including values of mimic joints), set those
+as the new values that correspond to the group */
+  void setJointGroupAccelerations(const std::string &joint_group_name, const Eigen::VectorXd& values)
+  {
+    const JointModelGroup *jmg = robot_model_->getJointModelGroup(joint_group_name);
+    if (jmg)
+      setJointGroupAccelerations(jmg, values);
+  }
+
+  /** \brief Given accelerations for the variables that make up a group, in the order found in the group (including values of mimic joints), set those
+as the new values that correspond to the group */
+  void setJointGroupAccelerations(const JointModelGroup *group, const Eigen::VectorXd& values);
+
+  /** \brief For a given group, copy the acceleration values of the variables that make up the group into another location, in the order that the variables are found in the group. This is not necessarily a contiguous block of memory in the RobotState itself, so we copy instead of returning a pointer.*/
+  void copyJointGroupAccelerations(const std::string &joint_group_name, std::vector<double> &gstate) const
+  {
+    const JointModelGroup *jmg = robot_model_->getJointModelGroup(joint_group_name);
+    if (jmg)
+    {
+      gstate.resize(jmg->getVariableCount());
+      copyJointGroupAccelerations(jmg, &gstate[0]);
+    }
+  }
+
+  /** \brief For a given group, copy the acceleration values of the variables that make up the group into another location, in the order that the variables are found in the group. This is not necessarily a contiguous block of memory in the RobotState itself, so we copy instead of returning a pointer.*/
+  void copyJointGroupAccelerations(const std::string &joint_group_name, double *gstate) const
+  {
+    const JointModelGroup *jmg = robot_model_->getJointModelGroup(joint_group_name);
+    if (jmg)
+      copyJointGroupAccelerations(jmg, gstate);
+  }
+
+  /** \brief For a given group, copy the acceleration values of the variables that make up the group into another location, in the order that the variables are found in the group. This is not necessarily a contiguous block of memory in the RobotState itself, so we copy instead of returning a pointer.*/
+  void copyJointGroupAccelerations(const JointModelGroup *group, std::vector<double> &gstate) const
+  {
+    gstate.resize(group->getVariableCount());
+    copyJointGroupAccelerations(group, &gstate[0]);
+  }
+
+  /** \brief For a given group, copy the acceleration values of the variables that make up the group into another location, in the order that the variables are found in the group. This is not necessarily a contiguous block of memory in the RobotState itself, so we copy instead of returning a pointer.*/
+  void copyJointGroupAccelerations(const JointModelGroup *group, double *gstate) const;
+
+  /** \brief For a given group, copy the acceleration values of the variables that make up the group into another location, in the order that the variables are found in the group. This is not necessarily a contiguous block of memory in the RobotState itself, so we copy instead of returning a pointer.*/
+  void copyJointGroupAccelerations(const std::string &joint_group_name, Eigen::VectorXd& values) const
+  {
+    const JointModelGroup *jmg = robot_model_->getJointModelGroup(joint_group_name);
+    if (jmg)
+      copyJointGroupAccelerations(jmg, values);
+  }
+
+  /** \brief For a given group, copy the acceleration values of the variables that make up the group into another location, in the order that the variables are found in the group. This is not necessarily a contiguous block of memory in the RobotState itself, so we copy instead of returning a pointer.*/
+  void copyJointGroupAccelerations(const JointModelGroup *group, Eigen::VectorXd& values) const;
+
+  /** @} */
+
+
   /** \name Setting from Inverse Kinematics
    *  @{
    */
