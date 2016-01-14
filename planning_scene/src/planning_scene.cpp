@@ -864,6 +864,10 @@ void planning_scene::PlanningScene::getPlanningSceneMsgOctomap(moveit_msgs::Plan
         {
           logInform("Cheaper to send tree instead of diff by %i bytes with %i changes", expected_size_diff-expected_size_tree, octree->numChangesDetected());
           octomap_msgs::fullMapToMsg(*octree, scene_msg.world.octomap.octomap);
+          if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE) {
+            logWarn("fullMapToMsg produced unexpected octomap type: %s",
+                    scene_msg.world.octomap.octomap.id.c_str());
+          }
         }
         else
         {
@@ -871,7 +875,13 @@ void planning_scene::PlanningScene::getPlanningSceneMsgOctomap(moveit_msgs::Plan
         }
       }
       else
+      {
         octomap_msgs::fullMapToMsg(*octree, scene_msg.world.octomap.octomap);
+        if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE) {
+          logWarn("fullMapToMsg produced unexpected octomap type: %s",
+                  scene_msg.world.octomap.octomap.id.c_str());
+        }
+      }
       tf::poseEigenToMsg(map->shape_poses_[0], scene_msg.world.octomap.origin);
     }
     else
@@ -1367,6 +1377,9 @@ void planning_scene::PlanningScene::processOctomapMsgDiff(const octomap_msgs::Oc
   {
     logError("Did not receive enough data for specified diff size: %i bytes expected, %i received", expected_size, msg.data.size());
     return;
+  }
+  if(expected_size < msg.data.size()) {
+      logWarn("Got more data than expected (%zu > %d)", msg.data.size(), expected_size);
   }
 
   for (int i=0; i<num_changes && !(!datastream); ++i)
