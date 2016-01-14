@@ -899,7 +899,7 @@ bool planning_scene::PlanningScene::getPlanningSceneMsgOctomapDiff(boost::shared
       datastream.write((const char*) &key[j], sizeof(unsigned short int));
     }
     float value = octree->search(key)->getLogOdds();
-    datastream.write((const char*) &value, sizeof(int));
+    datastream.write((const char*) &value, sizeof(float));
   }
 
   if (!datastream)
