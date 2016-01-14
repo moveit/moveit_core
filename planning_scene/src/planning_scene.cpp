@@ -858,11 +858,12 @@ void planning_scene::PlanningScene::getPlanningSceneMsgOctomap(moveit_msgs::Plan
       boost::shared_ptr<const octomap::OcTree> octree = o->octree;
       if (scene_msg.is_diff == true && octree->isChangeDetectionEnabled())
       {
-        int expected_size_diff = sizeof(int)+octree->numChangesDetected()*((3*sizeof(unsigned short int))+sizeof(float));
+        int num_changes = octree->numChangesDetected();
+        int expected_size_diff = sizeof(int)+num_changes*((3*sizeof(unsigned short int))+sizeof(float));
         int expected_size_tree = octree->size()*(sizeof(float)+sizeof(char));
         if (expected_size_diff > expected_size_tree)
         {
-          logInform("Cheaper to send tree instead of diff by %i bytes with %i changes", expected_size_diff-expected_size_tree, octree->numChangesDetected());
+          logInform("Cheaper to send tree instead of diff by %i bytes with %i changes", expected_size_diff-expected_size_tree, num_changes);
           octomap_msgs::fullMapToMsg(*octree, scene_msg.world.octomap.octomap);
           if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE) {
             logWarn("fullMapToMsg produced unexpected octomap type: %s",
@@ -900,8 +901,10 @@ bool planning_scene::PlanningScene::getPlanningSceneMsgOctomapDiff(boost::shared
   datastream.write((const char*) &num_changes, sizeof(int));
   //logInform("Octomap diff has %i changes", num_changes);
 
-  for (octomap::KeyBoolMap::const_iterator it = octree->changedKeysBegin();
-       it != octree->changedKeysEnd() && !(!datastream); ++it)
+  // this is safe as long as we only use the const_iterators for changedKeys
+  octomap::OcTree* octreeNonConst = const_cast<octomap::OcTree*>(octree.get());
+  for (octomap::KeyBoolMap::const_iterator it = octreeNonConst->changedKeysBegin();
+       it != octreeNonConst->changedKeysEnd() && !(!datastream); ++it)
   {
     octomap::OcTreeKey key = it->first;
     for (int j=0; j<3; j++)
