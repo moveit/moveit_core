@@ -6,7 +6,7 @@ Changelog for package moveit_core
 ------------------
 * [feat] planning_scene updates: expose success state to caller. This is required to get the information back for the ApplyPlanningSceneService. `#296 <https://github.com/ros-planning/moveit_core/issues/297>`_
 * [sys] replaced cmake_modules dependency with eigen
-* Contributors: Michael Ferguson, Robert Haschke, Michael Gè´”rner, Isaac I. Y. Saito
+* Contributors: Michael Ferguson, Robert Haschke, Michael Goerner, Isaac I. Y. Saito
 
 0.8.1 (2016-05-19)
 ------------------
@@ -27,7 +27,7 @@ Changelog for package moveit_core
 * [fix] New getOnlyOneEndEffectorTip() function `#262 <https://github.com/ros-planning/moveit_core/issues/262>`_
 * [fix] issue `#258 <https://github.com/ros-planning/moveit_core/issues/258>`_ in jade-devel `#266 <https://github.com/ros-planning/moveit_core/issues/266>`_
 * [fix] Segfault in parenthesis operator `#254 <https://github.com/ros-planning/moveit_core/issues/254>`_
-* [fix] API Change of shape_tools `#242 <https://github.com/ros-planning/moveit_core/issues/242>`_  
+* [fix] API Change of shape_tools `#242 <https://github.com/ros-planning/moveit_core/issues/242>`_
 * [fix] Fixed bug in KinematicConstraintSet::decide that makes it evaluate only joint_constraints. `#250 <https://github.com/ros-planning/moveit_core/issues/250>`_
 * [fix] Prevent divide by zero `#246 <https://github.com/ros-planning/moveit_core/issues/246>`_
 * [fix] removed the 'f' float specifiers and corrected misspelled method name
@@ -323,7 +323,7 @@ Changelog for package moveit_core
 * attempt to fix `#241 <https://github.com/ros-planning/moveit_core/issues/241>`_ from moveit_ros
 * update paths so that files are found in the globally installed moveit_resources package
 * remove magical 0.2 and use of velocity_map
-* Work on issue `#35 <https://github.com/ros-planning/moveit_core/issues/35>`_. 
+* Work on issue `#35 <https://github.com/ros-planning/moveit_core/issues/35>`_.
 
 0.3.19 (2013-05-02)
 -------------------
@@ -366,7 +366,7 @@ Changelog for package moveit_core
 * include velocities in conversions
 * Added more general computeCartesianPath, takes vector of waypoints
 * efficiency improvements
-  
+
 0.3.14 (2013-02-05)
 -------------------
 * initialize controller state by default
@@ -518,7 +518,7 @@ Changelog for package moveit_core
 ------------------
 * add processPlanningSceneWorldMsg()
 * Adding and fixing tests
-* Adding docs 
+* Adding docs
 * moves refineNormals to new file in collision_detection
 * Fixed bugs in PositionConstraint, documented Position and Orientation constraint, extended tests for Position and OrientationConstraint and started working on tests for VisibilityConstraint
 * more robust checking of joint names in joint constraints
