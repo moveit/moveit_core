@@ -98,6 +98,8 @@ public:
                 collision_detection::WorldPtr world = collision_detection::WorldPtr(new collision_detection::World()));
 
   static const std::string OCTOMAP_NS;
+  static const std::string OCTOMAP_MSG_TYPE;
+  static const std::string OCTOMAP_DIFF_MSG_TYPE;
   static const std::string DEFAULT_SCENE_NAME;
 
   ~PlanningScene();
@@ -692,6 +694,8 @@ public:
 
   void processOctomapMsg(const octomap_msgs::OctomapWithPose &map);
   void processOctomapMsg(const octomap_msgs::Octomap &map);
+  void processOctomapMsg(const octomap_msgs::Octomap &map, const Eigen::Affine3d &t);
+  void processOctomapMsgDiff(const octomap_msgs::Octomap &map, boost::shared_ptr<octomap::OcTree> octree);
   void processOctomapPtr(const boost::shared_ptr<const octomap::OcTree> &octree, const Eigen::Affine3d &t);
 
   /**
@@ -890,6 +894,7 @@ private:
   void getPlanningSceneMsgCollisionObject(moveit_msgs::PlanningScene &scene, const std::string &ns) const;
   void getPlanningSceneMsgCollisionObjects(moveit_msgs::PlanningScene &scene) const;
   void getPlanningSceneMsgOctomap(moveit_msgs::PlanningScene &scene) const;
+  bool getPlanningSceneMsgOctomapDiff(boost::shared_ptr<const octomap::OcTree> octree, octomap_msgs::Octomap &msg) const;
   void getPlanningSceneMsgObjectColors(moveit_msgs::PlanningScene &scene_msg) const;
 
   struct CollisionDetector;
