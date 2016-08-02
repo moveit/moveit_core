@@ -863,9 +863,10 @@ void planning_scene::PlanningScene::getPlanningSceneMsgOctomap(moveit_msgs::Plan
         int expected_size_tree = octree->size()*(sizeof(float)+sizeof(char));
         if (expected_size_diff > expected_size_tree)
         {
-          logInform("Cheaper to send tree instead of diff by %i bytes with %i changes", expected_size_diff-expected_size_tree, num_changes);
+          logDebug("Cheaper to send tree instead of diff by %i bytes with %i changes", expected_size_diff-expected_size_tree, num_changes);
           octomap_msgs::fullMapToMsg(*octree, scene_msg.world.octomap.octomap);
-          if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE) {
+          if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE)
+          {
             logWarn("fullMapToMsg produced unexpected octomap type: %s",
                     scene_msg.world.octomap.octomap.id.c_str());
           }
@@ -878,7 +879,8 @@ void planning_scene::PlanningScene::getPlanningSceneMsgOctomap(moveit_msgs::Plan
       else
       {
         octomap_msgs::fullMapToMsg(*octree, scene_msg.world.octomap.octomap);
-        if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE) {
+        if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE)
+        {
           logWarn("fullMapToMsg produced unexpected octomap type: %s",
                   scene_msg.world.octomap.octomap.id.c_str());
         }
@@ -890,7 +892,8 @@ void planning_scene::PlanningScene::getPlanningSceneMsgOctomap(moveit_msgs::Plan
   }
 }
 
-bool planning_scene::PlanningScene::getPlanningSceneMsgOctomapDiff(boost::shared_ptr<const octomap::OcTree> octree, octomap_msgs::Octomap &msg) const
+bool planning_scene::PlanningScene::getPlanningSceneMsgOctomapDiff(
+        boost::shared_ptr<const octomap::OcTree> octree, octomap_msgs::Octomap &msg) const
 {
   msg.id = OCTOMAP_DIFF_MSG_TYPE;
   msg.resolution = octree->getResolution();
@@ -907,7 +910,7 @@ bool planning_scene::PlanningScene::getPlanningSceneMsgOctomapDiff(boost::shared
        it != octreeNonConst->changedKeysEnd() && !(!datastream); ++it)
   {
     octomap::OcTreeKey key = it->first;
-    for (int j=0; j<3; j++)
+    for (int j = 0; j < 3; j++)
     {
       datastream.write((const char*) &key[j], sizeof(unsigned short int));
     }
@@ -1387,14 +1390,15 @@ void planning_scene::PlanningScene::processOctomapMsgDiff(const octomap_msgs::Oc
     logError("Did not receive enough data for specified diff size: %i bytes expected, %i received", expected_size, msg.data.size());
     return;
   }
-  if(expected_size < msg.data.size()) {
+  if(expected_size < msg.data.size())
+  {
       logWarn("Got more data than expected (%zu > %d)", msg.data.size(), expected_size);
   }
 
-  for (int i=0; i<num_changes && !(!datastream); ++i)
+  for (int i = 0; i < num_changes && !(!datastream); ++i)
   {
     octomap::OcTreeKey key;
-    for (int j=0; j<3; j++)
+    for (int j = 0; j < 3; j++)
     {
       datastream.read((char*) &key[j], sizeof(unsigned short int));
     }
