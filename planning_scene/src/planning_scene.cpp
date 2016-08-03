@@ -1364,9 +1364,9 @@ void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::Octoma
     {
       const shapes::OcTree *o = static_cast<const shapes::OcTree*>(map->shapes_[0].get());
       boost::shared_ptr<const octomap::OcTree> octree = o->octree;
-      boost::shared_ptr<octomap::OcTree> nc_octree = boost::const_pointer_cast<octomap::OcTree>(octree);
+      boost::shared_ptr<octomap::OcTree> nc_octree(new octomap::OcTree(*octree));
       processOctomapMsgDiff(msg, nc_octree);
-      processOctomapPtr(octree, t);
+      processOctomapPtr(nc_octree, t);
     }
   }
   else if (msg.id == OCTOMAP_MSG_TYPE)
