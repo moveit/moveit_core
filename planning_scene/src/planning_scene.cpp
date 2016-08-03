@@ -1322,10 +1322,17 @@ void planning_scene::PlanningScene::removeAllCollisionObjects()
 
 void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::OctomapWithPose &msg)
 {
-  const Eigen::Affine3d &t = getTransforms().getTransform(msg.header.frame_id);
   Eigen::Affine3d p;
   tf::poseMsgToEigen(msg.origin, p);
-  p = t * p;
+  if(msg.header.frame_id.empty())
+  {
+    logError("processOctomapMsg: OctomapWithPose with empty frame_id. Assuming planning frame.");
+  }
+  else
+  {
+      const Eigen::Affine3d &t = getTransforms().getTransform(msg.header.frame_id);
+      p = t * p;
+  }
   processOctomapMsg(msg.octomap, p);
 }
 
@@ -1350,11 +1357,11 @@ void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::Octoma
   }
   else if (msg.id == OCTOMAP_DIFF_MSG_TYPE)
   {
+    if (msg.data.empty())
+      return;
     collision_detection::CollisionWorld::ObjectConstPtr map = world_->getObject(OCTOMAP_NS);
     if (map && map->shapes_.size() == 1)
     {
-      if (msg.data.empty())
-        return;
       const shapes::OcTree *o = static_cast<const shapes::OcTree*>(map->shapes_[0].get());
       boost::shared_ptr<const octomap::OcTree> octree = o->octree;
       boost::shared_ptr<octomap::OcTree> nc_octree = boost::const_pointer_cast<octomap::OcTree>(octree);
@@ -1383,16 +1390,12 @@ void planning_scene::PlanningScene::processOctomapMsgDiff(const octomap_msgs::Oc
 
   int num_changes;
   datastream.read((char*) &num_changes, sizeof(int));
-  //logInform("Octomap diff has %i changes", num_changes);
   int expected_size = sizeof(int)+num_changes*((3*sizeof(unsigned short int))+sizeof(float));
-  if (expected_size > msg.data.size())
+  if (expected_size != msg.data.size())
   {
-    logError("Did not receive enough data for specified diff size: %i bytes expected, %i received", expected_size, msg.data.size());
+    logError("processOctomapMsgDiff received unexpected size of data: %i bytes expected, %i received",
+            expected_size, msg.data.size());
     return;
-  }
-  if(expected_size < msg.data.size())
-  {
-      logWarn("Got more data than expected (%zu > %d)", msg.data.size(), expected_size);
   }
 
   for (int i = 0; i < num_changes && !(!datastream); ++i)
