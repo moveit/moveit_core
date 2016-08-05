@@ -49,6 +49,8 @@
 namespace planning_scene
 {
 const std::string PlanningScene::OCTOMAP_NS = "<octomap>";
+const std::string PlanningScene::OCTOMAP_MSG_TYPE = "OcTree";
+const std::string PlanningScene::OCTOMAP_DIFF_MSG_TYPE = "diff(OcTree)";
 const std::string PlanningScene::DEFAULT_SCENE_NAME = "(noname)";
 
 class SceneTransforms : public robot_state::Transforms
@@ -866,12 +868,77 @@ void planning_scene::PlanningScene::getPlanningSceneMsgOctomap(moveit_msgs::Plan
     if (map->shapes_.size() == 1)
     {
       const shapes::OcTree *o = static_cast<const shapes::OcTree*>(map->shapes_[0].get());
-      octomap_msgs::fullMapToMsg(*o->octree, scene_msg.world.octomap.octomap);
+      boost::shared_ptr<const octomap::OcTree> octree = o->octree;
+      if (scene_msg.is_diff == true && octree->isChangeDetectionEnabled())
+      {
+        int num_changes = octree->numChangesDetected();
+        int expected_size_diff = sizeof(int)+num_changes*((3*sizeof(unsigned short int))+sizeof(float));
+        int expected_size_tree = octree->size()*(sizeof(float)+sizeof(char));
+        if (expected_size_diff > expected_size_tree)
+        {
+          logDebug("Cheaper to send tree instead of diff by %i bytes with %i changes", expected_size_diff-expected_size_tree, num_changes);
+          octomap_msgs::fullMapToMsg(*octree, scene_msg.world.octomap.octomap);
+          if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE)
+          {
+            logWarn("fullMapToMsg produced unexpected octomap type: %s",
+                    scene_msg.world.octomap.octomap.id.c_str());
+          }
+        }
+        else
+        {
+          getPlanningSceneMsgOctomapDiff(octree, scene_msg.world.octomap.octomap);
+        }
+      }
+      else
+      {
+        octomap_msgs::fullMapToMsg(*octree, scene_msg.world.octomap.octomap);
+        if(scene_msg.world.octomap.octomap.id != OCTOMAP_MSG_TYPE)
+        {
+          logWarn("fullMapToMsg produced unexpected octomap type: %s",
+                  scene_msg.world.octomap.octomap.id.c_str());
+        }
+      }
       tf::poseEigenToMsg(map->shape_poses_[0], scene_msg.world.octomap.origin);
     }
     else
       logError("Unexpected number of shapes in octomap collision object. Not including '%s' object", OCTOMAP_NS.c_str());
   }
+}
+
+bool planning_scene::PlanningScene::getPlanningSceneMsgOctomapDiff(
+        boost::shared_ptr<const octomap::OcTree> octree, octomap_msgs::Octomap &msg) const
+{
+  msg.id = OCTOMAP_DIFF_MSG_TYPE;
+  msg.resolution = octree->getResolution();
+  msg.binary = false;
+  std::stringstream datastream;
+
+  int num_changes = octree->numChangesDetected();
+  datastream.write((const char*) &num_changes, sizeof(int));
+  //logInform("Octomap diff has %i changes", num_changes);
+
+  // this is safe as long as we only use the const_iterators for changedKeys
+  octomap::OcTree* octreeNonConst = const_cast<octomap::OcTree*>(octree.get());
+  for (octomap::KeyBoolMap::const_iterator it = octreeNonConst->changedKeysBegin();
+       it != octreeNonConst->changedKeysEnd() && !(!datastream); ++it)
+  {
+    octomap::OcTreeKey key = it->first;
+    for (int j = 0; j < 3; j++)
+    {
+      datastream.write((const char*) &key[j], sizeof(unsigned short int));
+    }
+    float value = octree->search(key)->getLogOdds();
+    datastream.write((const char*) &value, sizeof(float));
+  }
+
+  if (!datastream)
+  {
+    logError("Error while writing Octomap diff message");
+    return false;
+  }
+  std::string datastring = datastream.str();
+  msg.data = std::vector<int8_t>(datastring.begin(), datastring.end());
+  return true;
 }
 
 void planning_scene::PlanningScene::getPlanningSceneMsg(moveit_msgs::PlanningScene &scene_msg) const
@@ -1269,32 +1336,6 @@ bool planning_scene::PlanningScene::usePlanningSceneMsg(const moveit_msgs::Plann
     return setPlanningSceneMsg(scene_msg);
 }
 
-void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::Octomap &map)
-{
-  // each octomap replaces any previous one
-  world_->removeObject(OCTOMAP_NS);
-
-  if (map.data.empty())
-    return;
-
-  if (map.id != "OcTree")
-  {
-    logError("Received octomap is of type '%s' but type 'OcTree' is expected.", map.id.c_str());
-    return;
-  }
-
-  boost::shared_ptr<octomap::OcTree> om(static_cast<octomap::OcTree*>(octomap_msgs::msgToMap(map)));
-  if (!map.header.frame_id.empty())
-  {
-    const Eigen::Affine3d &t = getTransforms().getTransform(map.header.frame_id);
-    world_->addToObject(OCTOMAP_NS, shapes::ShapeConstPtr(new shapes::OcTree(om)), t);
-  }
-  else
-  {
-    world_->addToObject(OCTOMAP_NS, shapes::ShapeConstPtr(new shapes::OcTree(om)), Eigen::Affine3d::Identity());
-  }
-}
-
 void planning_scene::PlanningScene::removeAllCollisionObjects()
 {
   const std::vector<std::string> &object_ids = world_->getObjectIds();
@@ -1303,26 +1344,97 @@ void planning_scene::PlanningScene::removeAllCollisionObjects()
       world_->removeObject(object_ids[i]);
 }
 
-void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::OctomapWithPose &map)
+void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::OctomapWithPose &msg)
 {
-  // each octomap replaces any previous one
-  world_->removeObject(OCTOMAP_NS);
-
-  if (map.octomap.data.empty())
-    return;
-
-  if (map.octomap.id != "OcTree")
+  Eigen::Affine3d p;
+  tf::poseMsgToEigen(msg.origin, p);
+  if(msg.header.frame_id.empty())
   {
-    logError("Received octomap is of type '%s' but type 'OcTree' is expected.", map.octomap.id.c_str());
+    logError("processOctomapMsg: OctomapWithPose with empty frame_id. Assuming planning frame.");
+  }
+  else
+  {
+      const Eigen::Affine3d &t = getTransforms().getTransform(msg.header.frame_id);
+      p = t * p;
+  }
+  processOctomapMsg(msg.octomap, p);
+}
+
+void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::Octomap &msg)
+{
+  if (!msg.header.frame_id.empty())
+  {
+    const Eigen::Affine3d &t = getTransforms().getTransform(msg.header.frame_id);
+    processOctomapMsg(msg, t);
+  }
+  else
+  {
+    processOctomapMsg(msg, Eigen::Affine3d::Identity());
+  }
+}
+
+void planning_scene::PlanningScene::processOctomapMsg(const octomap_msgs::Octomap &msg, const Eigen::Affine3d &t)
+{
+  if (msg.id.empty())
+  {
+    world_->removeObject(OCTOMAP_NS);
+  }
+  else if (msg.id == OCTOMAP_DIFF_MSG_TYPE)
+  {
+    if (msg.data.empty())
+      return;
+    collision_detection::CollisionWorld::ObjectConstPtr map = world_->getObject(OCTOMAP_NS);
+    if (map && map->shapes_.size() == 1)
+    {
+      const shapes::OcTree *o = static_cast<const shapes::OcTree*>(map->shapes_[0].get());
+      boost::shared_ptr<const octomap::OcTree> octree = o->octree;
+      boost::shared_ptr<octomap::OcTree> nc_octree(new octomap::OcTree(*octree));
+      processOctomapMsgDiff(msg, nc_octree);
+      processOctomapPtr(nc_octree, t);
+    }
+  }
+  else if (msg.id == OCTOMAP_MSG_TYPE)
+  {
+    world_->removeObject(OCTOMAP_NS); // Octomap replaces any previous one
+    if (msg.data.empty())
+      return;
+    boost::shared_ptr<octomap::OcTree> om(static_cast<octomap::OcTree*>(octomap_msgs::msgToMap(msg)));
+    world_->addToObject(OCTOMAP_NS, shapes::ShapeConstPtr(new shapes::OcTree(om)), t);
+  }
+  else
+  {
+    logError("Received Octomap is of unknown type '%s'", msg.id.c_str());
+  }
+}
+
+void planning_scene::PlanningScene::processOctomapMsgDiff(const octomap_msgs::Octomap &msg, boost::shared_ptr<octomap::OcTree> octree)
+{
+  std::stringstream datastream;
+  datastream.write((const char*) &msg.data[0], msg.data.size());
+
+  int num_changes;
+  datastream.read((char*) &num_changes, sizeof(int));
+  int expected_size = sizeof(int)+num_changes*((3*sizeof(unsigned short int))+sizeof(float));
+  if (expected_size != msg.data.size())
+  {
+    logError("processOctomapMsgDiff received unexpected size of data: %i bytes expected, %i received",
+            expected_size, msg.data.size());
     return;
   }
 
-  boost::shared_ptr<octomap::OcTree> om(static_cast<octomap::OcTree*>(octomap_msgs::msgToMap(map.octomap)));
-  const Eigen::Affine3d &t = getTransforms().getTransform(map.header.frame_id);
-  Eigen::Affine3d p;
-  tf::poseMsgToEigen(map.origin, p);
-  p = t * p;
-  world_->addToObject(OCTOMAP_NS, shapes::ShapeConstPtr(new shapes::OcTree(om)), p);
+  for (int i = 0; i < num_changes && !(!datastream); ++i)
+  {
+    octomap::OcTreeKey key;
+    for (int j = 0; j < 3; j++)
+    {
+      datastream.read((char*) &key[j], sizeof(unsigned short int));
+    }
+    float value;
+    datastream.read((char*) &value, sizeof(float));
+    octree->setNodeValue(key, value);
+  }
+  if (!datastream)
+    logError("Error while reading Octomap diff message");
 }
 
 void planning_scene::PlanningScene::processOctomapPtr(const boost::shared_ptr<const octomap::OcTree> &octree, const Eigen::Affine3d &t)
