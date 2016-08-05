@@ -1,16 +1,7 @@
-MoveIt Core
-================
+# This Repository Has Moved
 
-This repository includes core libraries used by MoveIt:
- - representation of kinematic models
- - collision detection interfaces and implementations
- - interfaces for kinematic solver plugins
- - interfaces for motion planning plugins
- - interfaces for controllers and sensors
+The new location as of August 5th, 2016 is [https://github.com/ros-planning/moveit](https://github.com/ros-planning/moveit)
 
-These libraries do not depend on ROS and can be used independently.
+See [migration notes](https://github.com/davetcoleman/moveit_merge/blob/master/README.md) for more details.
 
-## Build Status
-
- * Devel Job Status: [![Devel Job Status](http://jenkins.ros.org/buildStatus/icon?job=devel-indigo-moveit_core)](http://jenkins.ros.org/job/devel-indigo-moveit_core)
- * AMD64 Debian Job Status: [![Build Status](http://jenkins.ros.org/buildStatus/icon?job=ros-indigo-moveit-core_binarydeb_trusty_amd64)](http://jenkins.ros.org/job/ros-indigo-moveit-core_binarydeb_trusty_amd64/)
+Please do not open new pull requests or issues in this old location.
