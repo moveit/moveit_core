@@ -313,6 +313,12 @@ public:
    * propogateRobotPadding() to copy it to all the other collision detectors. */
   const collision_detection::CollisionRobotPtr& getCollisionRobotNonConst();
 
+  /** \brief Get the representation of the unpadded collision robot
+   * This can be used to set padding and link scale on the active collision_robot_unpadded.
+   * NOTE: After modifying padding and scale on the active robot call
+   * propogateRobotPadding() to copy it to all the other collision detectors. */
+  const collision_detection::CollisionRobotPtr& getCollisionRobotUnpaddedNonConst();
+
   /** \brief Copy scale and padding from active CollisionRobot to other CollisionRobots.
    * This should be called after any changes are made to the scale or padding of the active
    * CollisionRobot.  This has no effect on the unpadded CollisionRobots. */
