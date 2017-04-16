@@ -246,7 +246,7 @@ public:
    * @return True if a sample was successfully projected, false otherwise
    */
   virtual bool project(robot_state::RobotState &state,
-                       unsigned int max_attempts) = 0;
+                       unsigned int max_attempts, bool use_state_as_seed = true) = 0;
 
   /**
    * \brief Returns whether or not the constraint sampler is valid or not.

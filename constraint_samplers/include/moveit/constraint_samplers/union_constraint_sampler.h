@@ -152,7 +152,7 @@ public:
    */
   virtual bool sample(robot_state::RobotState &state, const robot_state::RobotState &reference_state, unsigned int max_attempts);
 
-  virtual bool project(robot_state::RobotState &state, unsigned int max_attempts);
+  virtual bool project(robot_state::RobotState &state, unsigned int max_attempts, bool use_state_as_seed = true);
 
   /**
    * \brief Get the name of the constraint sampler, for debugging purposes
